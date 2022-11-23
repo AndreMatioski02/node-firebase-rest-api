@@ -34,12 +34,19 @@ class trainerRepository {
   }
 
   async authenticate(email, password) {
-    let _hashPassword = md5(password);
-    const trainer = await firestore
+    let _hashPassword = md5(password)
+    let trainer
+    const res = await firestore
       .collection("trainers")
       .where("email", "==", email)
       .where("password", "==", _hashPassword)
-      .get();
+      .get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          console.log(doc.id, ' => ', doc.data())
+          trainer = doc.data()
+        })
+      })
     return trainer; 
   }
 }
